@@ -39,6 +39,7 @@ public class ItemStackTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        System.out.println(name+"=="+transformedName);
         if (!"net.minecraft.item.ItemStack".equals(name))
             return basicClass;
         ClassNode classNode = new ClassNode();
@@ -48,6 +49,7 @@ public class ItemStackTransformer implements IClassTransformer {
         FieldNode itemField = null;
         for (FieldNode f : classNode.fields)
         {
+            System.out.println("FIELD: "+f.name+" with desc "+f.desc);
             if (ITEM_TYPE.equals(f.desc) && itemField == null)
             {
                 itemField = f;
@@ -65,6 +67,7 @@ public class ItemStackTransformer implements IClassTransformer {
         MethodNode getItemMethod = null;
         for (MethodNode m: classNode.methods)
         {
+            System.out.println("METHOD: "+m.name+" with desc "+m.desc);
             if (m.name.equals("getItemRaw")) continue;
             if (GETITEM_DESC.equals(m.desc) && getItemMethod == null)
             {
