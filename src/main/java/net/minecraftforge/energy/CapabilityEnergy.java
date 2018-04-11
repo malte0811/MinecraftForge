@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class CapabilityEnergy
 {
@@ -51,5 +52,6 @@ public class CapabilityEnergy
             }
         },
         () -> new EnergyStorage(1000));
+        FMLLog.log.error("Energy name: {}", ENERGY.getName());
     }
 }

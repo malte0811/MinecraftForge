@@ -25,6 +25,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -32,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.classloading.FMLForgePlugin;
@@ -398,6 +400,25 @@ public class Loader
             discoverer.findClasspathMods(modClassLoader);
             FMLLog.log.debug("Minecraft jar mods loaded successfully");
         }
+        discoverer.printCandidates();
+        CodeSource loadedFromSource = Loader.class.getProtectionDomain().getCodeSource();
+        if (loadedFromSource!=null)
+        {
+            try
+            {
+                String path = loadedFromSource.getLocation().toString();
+                if (path.indexOf('!')>=0)
+                    path = path.substring(0, path.indexOf('!'));
+                if (path.startsWith("jar:"))
+                    path = path.substring("jar:".length());
+                File loadedFrom = new File(new URI(path));
+                discoverer.addCandidate(new ModCandidate(loadedFrom, loadedFrom, ContainerType.JAR));
+            }
+            catch (URISyntaxException e)
+            {
+                e.printStackTrace();
+            }
+        }
 
         List<Artifact> maven_canidates = LibraryManager.flattenLists(minecraftDir);
         List<File> file_canidates = LibraryManager.gatherLegacyCanidates(minecraftDir);
@@ -429,6 +450,7 @@ public class Loader
             }
         }
 
+        discoverer.printCandidates();
         mods.addAll(discoverer.identifyMods());
         identifyDuplicates(mods);
         namedMods = Maps.uniqueIndex(mods, ModContainer::getModId);

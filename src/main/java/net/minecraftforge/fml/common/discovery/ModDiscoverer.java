@@ -131,4 +131,13 @@ public class ModDiscoverer
         }
         candidates.add(candidate);
     }
+
+    public void printCandidates()
+    {
+        FMLLog.log.info("Printing known candidates!");
+        for (ModCandidate c:candidates)
+        {
+            FMLLog.log.info(c.getModContainer());
+        }
+    }
 }
